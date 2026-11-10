@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#102923">
+  <meta name="description" content="سبحة رقمية وتذكير بالأذكار، تعمل على الكمبيوتر والموبايل.">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+  <title>وِرد | سبحتك الرقمية</title>
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="ورد، الصفحة الرئيسية"><span class="brand-mark">و</span><span><b>وِرد</b><small>سبحتك الرقمية</small></span></a>
+      <div class="header-actions"><span class="save-state"><i></i> محفوظ على جهازك</span><button class="icon-button" id="settings-open" aria-label="الإعدادات" title="الإعدادات">☷</button></div>
+    </header>
+
+    <section class="welcome"><div class="eyebrow"><span></span> خُذ لحظةً لنفسك</div><h1>اذكر الله، <em>واطمئن.</em></h1><p>قليلٌ دائم، خيرٌ من كثيرٍ منقطع.</p></section>
+
+    <section class="counter-card" aria-label="عداد التسبيح">
+      <div class="counter-top"><span class="today-label"><span class="sun-icon">✳</span> وِرد اليوم</span><button id="reset" class="reset-button" title="تصفير العداد">↺ <span>تصفير</span></button></div>
+      <div class="count-wrap"><span id="count" class="count" aria-live="polite">0</span><span class="count-caption">تسبيحة</span></div>
+      <div class="goal-track"><div class="goal-meta"><span>هدفك اليومي</span><span><b id="goal-progress">0</b> / <span id="goal-value">100</span></span></div><div class="track"><div id="progress" class="progress"></div></div></div>
+      <button id="tasbeeh" class="tasbeeh-button" aria-label="سبّح، أضف تسبيحة"><span>سَبِّح</span><small>اضغط هنا أو المس مفتاح المسافة</small></button>
+      <div class="counter-foot"><span>كل ذكرٍ يترك أثرًا طيبًا</span><span class="bead-row" aria-hidden="true">● ● ●</span></div>
+    </section>
+
+    <section class="dhikr-card"><div class="dhikr-icon">✧</div><div class="dhikr-copy"><span class="section-label">ذِكرُك الآن</span><p id="dhikr-text">سُبْحَانَ اللَّهِ وَبِحَمْدِهِ</p><span class="dhikr-note">ردّدها بقلبك وعلى مهل</span></div><button class="sound-button" id="sound" aria-label="تشغيل صوت النقر" title="صوت النقر">♫</button></section>
+
+    <section class="reminder-card"><div class="reminder-symbol">◷</div><div class="reminder-copy"><b>تذكير لطيف</b><span id="reminder-status">كل ٥ دقائق · لمدة ٣٠ ثانية</span></div><span class="live-dot" title="التذكير مفعّل"></span></section>
+
+    <footer>بِذِكْرِ اللهِ تَطْمَئِنُّ الْقُلُوبُ <span>·</span> الرعد: ٢٨</footer>
+  </main>
+
+  <div id="reminder" class="reminder-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="reminder-title"><div class="reminder-modal"><span class="modal-star">✳</span><span class="section-label">لحظةُ ذِكر</span><h2 id="reminder-title">ألا بذكر الله تطمئن القلوب</h2><p id="modal-dhikr">سُبْحَانَ اللَّهِ وَبِحَمْدِهِ</p><div class="modal-actions"><button id="reminder-done" class="primary-small">حاضر، سَبَّحت</button><button id="reminder-close" class="text-small">لاحقًا</button></div><span class="dismiss-note">سيختفي التذكير تلقائيًا</span></div></div>
+
+  <div id="settings" class="settings-backdrop" hidden><section class="settings-panel" role="dialog" aria-modal="true" aria-labelledby="settings-title"><div class="settings-heading"><div><span class="section-label">خصص تجربتك</span><h2 id="settings-title">الإعدادات</h2></div><button id="settings-close" class="icon-button" aria-label="إغلاق">×</button></div>
+    <label class="field-label" for="dhikr-select">الذِكر</label><select id="dhikr-select"><option value="سُبْحَانَ اللَّهِ وَبِحَمْدِهِ">سُبْحَانَ اللَّهِ وَبِحَمْدِهِ</option><option value="سُبْحَانَ اللَّهِ">سُبْحَانَ اللَّهِ</option><option value="الْحَمْدُ لِلَّهِ">الْحَمْدُ لِلَّهِ</option><option value="اللَّهُ أَكْبَرُ">اللَّهُ أَكْبَرُ</option><option value="لَا إِلَهَ إِلَّا اللَّهُ">لَا إِلَهَ إِلَّا اللَّهُ</option><option value="أَسْتَغْفِرُ اللَّهَ">أَسْتَغْفِرُ اللَّهَ</option><option value="اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ">اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ</option></select>
+    <label class="field-label" for="interval">التذكير كل <span class="field-hint">بالدقائق</span></label><div class="range-row"><input id="interval" type="range" min="1" max="60" value="5"><output id="interval-out">٥ دقائق</output></div>
+    <label class="field-label" for="duration">مدة ظهور التذكير <span class="field-hint">بالثواني</span></label><div class="range-row"><input id="duration" type="range" min="5" max="120" step="5" value="30"><output id="duration-out">٣٠ ثانية</output></div>
+    <label class="field-label" for="goal">الهدف اليومي</label><select id="goal"><option value="33">٣٣ تسبيحة</option><option value="100" selected>١٠٠ تسبيحة</option><option value="500">٥٠٠ تسبيحة</option><option value="1000">١٠٠٠ تسبيحة</option></select>
+    <button id="install" class="install-button" hidden>＋ تثبيت التطبيق</button><p class="settings-note">إعداداتك وعدادك محفوظان على هذا الجهاز. التذكير يعمل أثناء فتح التطبيق.</p>
+  </section></div>
+  <script src="app.js" defer></script>
+</body>
+</html>
+
