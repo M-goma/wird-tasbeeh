@@ -1,6 +1,7 @@
 (() => {
   if (globalThis.__wirdReminderReady) return;
   globalThis.__wirdReminderReady = true;
+  let countdownHandle;
 
   chrome.runtime.onMessage.addListener(message => {
     if (message?.type !== 'WIRD_REMINDER') return;
@@ -8,6 +9,7 @@
   });
 
   function showReminder({ dhikr, duration, darkMode }) {
+    clearInterval(countdownHandle);
     document.getElementById('__wird-reminder-host')?.remove();
     const host = document.createElement('div');
     host.id = '__wird-reminder-host';
@@ -30,10 +32,17 @@
     const mark = document.createElement('span'); mark.className = 'mark'; mark.textContent = 'و';
     const label = document.createElement('span'); label.className = 'label'; label.textContent = 'وِرد · لحظةُ ذِكر';
     const close = document.createElement('button'); close.className = 'close'; close.type = 'button'; close.setAttribute('aria-label', 'إغلاق التذكير'); close.textContent = '×';
-    close.addEventListener('click', () => host.remove());
+    close.addEventListener('click', () => { clearInterval(countdownHandle); host.remove(); });
     const text = document.createElement('p'); text.className = 'dhikr'; text.textContent = dhikr || 'سُبْحَانَ اللَّهِ وَبِحَمْدِهِ';
-    const note = document.createElement('span'); note.className = 'note'; note.textContent = 'سيختفي التذكير تلقائيًا';
+    const note = document.createElement('span'); note.className = 'note';
     top.append(mark, label, close); card.append(top, text, note); root.append(style, card); document.documentElement.append(host);
-    window.setTimeout(() => host.remove(), Math.max(5, Number(duration) || 30) * 1000);
+    let remaining = Math.max(5, Number(duration) || 30);
+    const update = () => { note.textContent = `متبقي ${new Intl.NumberFormat('ar-EG').format(remaining)} ثانية`; };
+    update();
+    countdownHandle = window.setInterval(() => {
+      remaining--;
+      if (remaining <= 0 || !host.isConnected) { clearInterval(countdownHandle); host.remove(); return; }
+      update();
+    }, 1000);
   }
 })();

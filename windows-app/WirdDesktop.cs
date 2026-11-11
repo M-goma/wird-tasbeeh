@@ -312,7 +312,8 @@ namespace WirdDesktop
             Controls.Add(zikr);
 
             Label note = new Label();
-            note.Text = "سيختفي التذكير تلقائيًا";
+            int remainingSeconds = Math.Max(5, seconds);
+            note.Text = "متبقي " + ArabicDigits(remainingSeconds) + " ثانية";
             note.Font = new Font("Segoe UI", 9, FontStyle.Regular);
             note.ForeColor = darkMode ? Color.FromArgb(164, 178, 166) : Color.FromArgb(155, 165, 155);
             note.TextAlign = ContentAlignment.MiddleRight;
@@ -322,8 +323,13 @@ namespace WirdDesktop
             Height = note.Bottom + 12;
 
             Timer timer = new Timer();
-            timer.Interval = Math.Max(5, seconds) * 1000;
-            timer.Tick += delegate { timer.Stop(); Close(); };
+            timer.Interval = 1000;
+            timer.Tick += delegate
+            {
+                remainingSeconds--;
+                if (remainingSeconds <= 0) { timer.Stop(); Close(); }
+                else note.Text = "متبقي " + ArabicDigits(remainingSeconds) + " ثانية";
+            };
             Shown += delegate
             {
                 Screen screen = Screen.FromPoint(Cursor.Position);
@@ -333,6 +339,11 @@ namespace WirdDesktop
                 timer.Start();
             };
             FormClosed += delegate { timer.Dispose(); };
+        }
+
+        private static string ArabicDigits(int value)
+        {
+            return value.ToString().Replace('0', '٠').Replace('1', '١').Replace('2', '٢').Replace('3', '٣').Replace('4', '٤').Replace('5', '٥').Replace('6', '٦').Replace('7', '٧').Replace('8', '٨').Replace('9', '٩');
         }
     }
 
