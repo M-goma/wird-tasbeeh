@@ -58,6 +58,7 @@ namespace WirdDesktop
         private ReminderForm reminder;
         private SettingsForm settingsForm;
         private bool paused;
+        private int dhikrRotationIndex = -1;
         private readonly ToolStripMenuItem pauseItem;
 
         public WirdContext()
@@ -108,8 +109,21 @@ namespace WirdDesktop
         private void ShowReminder()
         {
             if (reminder != null && !reminder.IsDisposed) reminder.Close();
+            settings.Dhikr = NextDhikr(settings.Dhikr);
+            StoreSettings(settings);
             reminder = new ReminderForm(settings.Dhikr, settings.DurationSeconds, settings.DarkMode);
             reminder.Show();
+        }
+
+        private string NextDhikr(string current)
+        {
+            string[] adhkar = { "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ", "سُبْحَانَ اللَّهِ", "الْحَمْدُ لِلَّهِ", "اللَّهُ أَكْبَرُ", "لَا إِلَهَ إِلَّا اللَّهُ", "أَسْتَغْفِرُ اللَّهَ", "لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ", "سُبْحَانَ اللَّهِ وَالْحَمْدُ لِلَّهِ وَلَا إِلَهَ إِلَّا اللَّهُ وَاللَّهُ أَكْبَرُ", "اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ" };
+            int index = Array.IndexOf(adhkar, current);
+            if (index >= 0) dhikrRotationIndex = index;
+            else if (dhikrRotationIndex == -1) { dhikrRotationIndex = -2; return current; }
+            else if (dhikrRotationIndex == -2) dhikrRotationIndex = -1;
+            dhikrRotationIndex = (dhikrRotationIndex + 1) % adhkar.Length;
+            return adhkar[dhikrRotationIndex];
         }
 
         private void OpenSettings()
@@ -257,13 +271,13 @@ namespace WirdDesktop
             RightToLeft = RightToLeft.Yes;
             RightToLeftLayout = true;
             BackColor = darkMode ? Color.FromArgb(28, 39, 33) : Color.White;
-            Size = new Size(390, 190);
-            Padding = new Padding(20);
+            Size = new Size(340, 150);
+            Padding = new Padding(14);
 
             Panel accent = new Panel();
             accent.BackColor = Color.FromArgb(196, 148, 80);
             accent.Location = new Point(0, 0);
-            accent.Size = new Size(390, 4);
+            accent.Size = new Size(340, 4);
             Controls.Add(accent);
 
             Label close = new Label();
@@ -271,8 +285,8 @@ namespace WirdDesktop
             close.Font = new Font("Segoe UI", 17, FontStyle.Regular);
             close.ForeColor = darkMode ? Color.FromArgb(170, 187, 174) : Color.FromArgb(125, 140, 130);
             close.TextAlign = ContentAlignment.MiddleCenter;
-            close.Size = new Size(30, 30);
-            close.Location = new Point(340, 12);
+            close.Size = new Size(26, 26);
+            close.Location = new Point(299, 8);
             close.Cursor = Cursors.Hand;
             close.Click += delegate { Close(); };
             Controls.Add(close);
@@ -281,26 +295,26 @@ namespace WirdDesktop
             brand.Text = "وِرد  ·  لحظةُ ذِكر";
             brand.Font = new Font("Segoe UI", 10, FontStyle.Regular);
             brand.ForeColor = darkMode ? Color.FromArgb(170, 187, 174) : Color.FromArgb(125, 145, 130);
-            brand.Location = new Point(24, 20);
-            brand.Size = new Size(290, 25);
+            brand.Location = new Point(18, 14);
+            brand.Size = new Size(260, 22);
             Controls.Add(brand);
 
             Label title = new Label();
             title.Text = "ألا بذكر الله تطمئن القلوب";
-            title.Font = new Font("Segoe UI", 16, FontStyle.Bold);
+            title.Font = new Font("Segoe UI", 13, FontStyle.Bold);
             title.ForeColor = darkMode ? Color.FromArgb(220, 235, 222) : Color.FromArgb(33, 75, 57);
             title.TextAlign = ContentAlignment.MiddleRight;
-            title.Location = new Point(22, 57);
-            title.Size = new Size(342, 35);
+            title.Location = new Point(18, 43);
+            title.Size = new Size(300, 29);
             Controls.Add(title);
 
             Label zikr = new Label();
             zikr.Text = dhikr;
-            zikr.Font = new Font("Segoe UI", 19, FontStyle.Bold);
+            zikr.Font = new Font("Segoe UI", 16, FontStyle.Bold);
             zikr.ForeColor = darkMode ? Color.FromArgb(177, 211, 181) : Color.FromArgb(83, 121, 87);
             zikr.TextAlign = ContentAlignment.MiddleRight;
-            zikr.Location = new Point(22, 98);
-            zikr.Size = new Size(342, 42);
+            zikr.Location = new Point(18, 76);
+            zikr.Size = new Size(300, 34);
             Controls.Add(zikr);
 
             Label note = new Label();
@@ -308,8 +322,8 @@ namespace WirdDesktop
             note.Font = new Font("Segoe UI", 9, FontStyle.Regular);
             note.ForeColor = darkMode ? Color.FromArgb(164, 178, 166) : Color.FromArgb(155, 165, 155);
             note.TextAlign = ContentAlignment.MiddleRight;
-            note.Location = new Point(22, 148);
-            note.Size = new Size(342, 22);
+            note.Location = new Point(18, 116);
+            note.Size = new Size(300, 20);
             Controls.Add(note);
 
             Timer timer = new Timer();

@@ -1,4 +1,5 @@
 const $=s=>document.querySelector(s), arabic=n=>new Intl.NumberFormat('ar-EG').format(n);
+const adhkar=['سُبْحَانَ اللَّهِ وَبِحَمْدِهِ','سُبْحَانَ اللَّهِ','الْحَمْدُ لِلَّهِ','اللَّهُ أَكْبَرُ','لَا إِلَهَ إِلَّا اللَّهُ','أَسْتَغْفِرُ اللَّهَ','لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ','سُبْحَانَ اللَّهِ وَالْحَمْدُ لِلَّهِ وَلَا إِلَهَ إِلَّا اللَّهُ وَاللَّهُ أَكْبَرُ','اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ'];
 const defaults={count:0,goal:100,interval:5,duration:30,dhikr:'سُبْحَانَ اللَّهِ وَبِحَمْدِهِ',activeFrom:'08:00',activeUntil:'22:00',darkMode:false,sound:false,lastDay:new Date().toLocaleDateString('en-CA')};
 let state={...defaults};try{state={...defaults,...JSON.parse(localStorage.getItem('wird-state')||'{}')}}catch{}
 let installPrompt=null,reminderTimer,audioCtx,nextReminder=Date.now()+state.interval*60000;
@@ -8,7 +9,7 @@ function increment(){state.count++;sound();save();render()}
 function sound(){if(!state.sound)return;try{audioCtx??=new AudioContext();const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.frequency.value=740;g.gain.setValueAtTime(.035,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+.08);o.connect(g).connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+.08)}catch{}}
 function withinActiveHours(date=new Date()){const now=date.getHours()*60+date.getMinutes(),from=parseTime(state.activeFrom),until=parseTime(state.activeUntil);return from<=until?now>=from&&now<until:now>=from||now<until}
 function parseTime(value){const [h,m]=String(value||'00:00').split(':').map(Number);return h*60+m}
-function showReminder(){if(!withinActiveHours())return;const el=$('#reminder');el.hidden=false;clearTimeout(reminderTimer);reminderTimer=setTimeout(()=>el.hidden=true,state.duration*1000)}
+function showReminder(){if(!withinActiveHours())return;const choices=state.dhikr&&!adhkar.includes(state.dhikr)?[state.dhikr,...adhkar]:adhkar;state.dhikr=choices[(choices.indexOf(state.dhikr)+1)%choices.length];save();render();const el=$('#reminder');el.hidden=false;clearTimeout(reminderTimer);reminderTimer=setTimeout(()=>el.hidden=true,state.duration*1000)}
 function schedule(){nextReminder=Date.now()+state.interval*60000}
 function tick(){if(Date.now()>=nextReminder){nextReminder=Date.now()+state.interval*60000;if(withinActiveHours())showReminder()}}
 function maybeResetDay(){const today=new Date().toLocaleDateString('en-CA');if(state.lastDay!==today){state.count=0;state.lastDay=today;save()}}
