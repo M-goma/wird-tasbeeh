@@ -331,7 +331,7 @@ namespace WirdDesktop
     {
         private readonly NumericUpDown interval;
         private readonly NumericUpDown duration;
-        private readonly TextBox dhikr;
+        private readonly ComboBox dhikr;
         private readonly CheckBox startup;
         private readonly CheckBox darkMode;
         private readonly DateTimePicker activeFrom;
@@ -361,9 +361,12 @@ namespace WirdDesktop
             title.Size = new Size(345, 32);
             Controls.Add(title);
 
-            AddLabel("الذِكر", 60);
-            dhikr = new TextBox();
+            AddLabel("اختر ذكرًا أو اكتب ذكرًا خاصًا", 60);
+            dhikr = new ComboBox();
+            dhikr.DropDownStyle = ComboBoxStyle.DropDown;
+            dhikr.Items.AddRange(new object[] { "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ", "سُبْحَانَ اللَّهِ", "الْحَمْدُ لِلَّهِ", "اللَّهُ أَكْبَرُ", "لَا إِلَهَ إِلَّا اللَّهُ", "أَسْتَغْفِرُ اللَّهَ", "لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ", "سُبْحَانَ اللَّهِ وَالْحَمْدُ لِلَّهِ وَلَا إِلَهَ إِلَّا اللَّهُ وَاللَّهُ أَكْبَرُ", "اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ" });
             dhikr.Text = current.Dhikr;
+            if (!dhikr.Items.Contains(current.Dhikr)) dhikr.Items.Add(current.Dhikr);
             dhikr.Location = new Point(22, 86);
             dhikr.Size = new Size(345, 30);
             Controls.Add(dhikr);
@@ -462,7 +465,7 @@ namespace WirdDesktop
             foreach (Control control in parent.Controls)
             {
                 control.ForeColor = foreground;
-                if (control is TextBox || control is NumericUpDown || control is DateTimePicker)
+                if (control is TextBox || control is ComboBox || control is NumericUpDown || control is DateTimePicker)
                 {
                     control.BackColor = dark ? Color.FromArgb(20, 31, 25) : Color.White;
                 }

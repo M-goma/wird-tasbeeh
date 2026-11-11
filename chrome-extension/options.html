@@ -8,7 +8,7 @@
 </head>
 <body>
   <header class="brand"><span class="mark">و</span><span><b>وِرد</b><small>تذكير لطيف أثناء التصفح</small></span></header>
-  <label class="field" for="dhikr">الذِكر</label><input id="dhikr" maxlength="120" placeholder="اكتب الذكر الذي تريده">
+  <label class="field" for="dhikr">اختر ذكرًا أو اكتب ذكرًا خاصًا</label><input id="dhikr" list="dhikrOptions" maxlength="120" placeholder="اختر أو اكتب الذكر"><datalist id="dhikrOptions"><option value="سُبْحَانَ اللَّهِ وَبِحَمْدِهِ"><option value="سُبْحَانَ اللَّهِ"><option value="الْحَمْدُ لِلَّهِ"><option value="اللَّهُ أَكْبَرُ"><option value="لَا إِلَهَ إِلَّا اللَّهُ"><option value="أَسْتَغْفِرُ اللَّهَ"><option value="لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ"><option value="سُبْحَانَ اللَّهِ وَالْحَمْدُ لِلَّهِ وَلَا إِلَهَ إِلَّا اللَّهُ وَاللَّهُ أَكْبَرُ"><option value="اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ"></datalist>
   <label class="field" for="interval">التذكير كل</label><div class="row"><input id="interval" type="range" min="1" max="60" value="5"><output id="interval-out">٥ دقائق</output></div>
   <label class="field" for="duration">مدة ظهور التذكير</label><div class="row"><input id="duration" type="range" min="5" max="120" step="5" value="30"><output id="duration-out">٣٠ ثانية</output></div>
   <label class="field">وقت التشغيل</label><div class="times"><label>من<input id="activeFrom" type="time"></label><label>إلى<input id="activeUntil" type="time"></label></div>
