@@ -117,7 +117,7 @@ namespace WirdDesktop
 
         private string NextDhikr(string current)
         {
-            string[] adhkar = { "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ", "سُبْحَانَ اللَّهِ", "الْحَمْدُ لِلَّهِ", "اللَّهُ أَكْبَرُ", "لَا إِلَهَ إِلَّا اللَّهُ", "أَسْتَغْفِرُ اللَّهَ", "لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ", "سُبْحَانَ اللَّهِ وَالْحَمْدُ لِلَّهِ وَلَا إِلَهَ إِلَّا اللَّهُ وَاللَّهُ أَكْبَرُ", "اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ" };
+            string[] adhkar = { "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ", "سُبْحَانَ اللَّهِ", "الْحَمْدُ لِلَّهِ", "اللَّهُ أَكْبَرُ", "لَا إِلَهَ إِلَّا اللَّهُ", "أَسْتَغْفِرُ اللَّهَ", "لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ", "سُبْحَانَ اللَّهِ وَالْحَمْدُ لِلَّهِ وَلَا إِلَهَ إِلَّا اللَّهُ وَاللَّهُ أَكْبَرُ", "اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ", "سُبْحَانَ اللَّهِ الْعَظِيمِ وَبِحَمْدِهِ", "لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ", "أَسْتَغْفِرُ اللَّهَ الْعَظِيمَ وَأَتُوبُ إِلَيْهِ", "حَسْبِيَ اللَّهُ لَا إِلَهَ إِلَّا هُوَ، عَلَيْهِ تَوَكَّلْتُ وَهُوَ رَبُّ الْعَرْشِ الْعَظِيمِ", "اللَّهُمَّ أَعِنِّي عَلَى ذِكْرِكَ وَشُكْرِكَ وَحُسْنِ عِبَادَتِكَ" };
             int index = Array.IndexOf(adhkar, current);
             if (index >= 0) dhikrRotationIndex = index;
             else if (dhikrRotationIndex == -1) { dhikrRotationIndex = -2; return current; }
@@ -271,13 +271,13 @@ namespace WirdDesktop
             RightToLeft = RightToLeft.Yes;
             RightToLeftLayout = true;
             BackColor = darkMode ? Color.FromArgb(28, 39, 33) : Color.White;
-            Size = new Size(340, 150);
+            Size = new Size(360, 150);
             Padding = new Padding(14);
 
             Panel accent = new Panel();
             accent.BackColor = Color.FromArgb(196, 148, 80);
             accent.Location = new Point(0, 0);
-            accent.Size = new Size(340, 4);
+            accent.Size = new Size(360, 4);
             Controls.Add(accent);
 
             Label close = new Label();
@@ -286,7 +286,7 @@ namespace WirdDesktop
             close.ForeColor = darkMode ? Color.FromArgb(170, 187, 174) : Color.FromArgb(125, 140, 130);
             close.TextAlign = ContentAlignment.MiddleCenter;
             close.Size = new Size(26, 26);
-            close.Location = new Point(299, 8);
+            close.Location = new Point(319, 8);
             close.Cursor = Cursors.Hand;
             close.Click += delegate { Close(); };
             Controls.Add(close);
@@ -305,7 +305,7 @@ namespace WirdDesktop
             title.ForeColor = darkMode ? Color.FromArgb(220, 235, 222) : Color.FromArgb(33, 75, 57);
             title.TextAlign = ContentAlignment.MiddleRight;
             title.Location = new Point(18, 43);
-            title.Size = new Size(300, 29);
+            title.Size = new Size(320, 29);
             Controls.Add(title);
 
             Label zikr = new Label();
@@ -314,7 +314,10 @@ namespace WirdDesktop
             zikr.ForeColor = darkMode ? Color.FromArgb(177, 211, 181) : Color.FromArgb(83, 121, 87);
             zikr.TextAlign = ContentAlignment.MiddleRight;
             zikr.Location = new Point(18, 76);
-            zikr.Size = new Size(300, 34);
+            zikr.Size = new Size(324, 34);
+            zikr.AutoEllipsis = false;
+            Size measuredText = TextRenderer.MeasureText(dhikr, zikr.Font, new Size(324, 1000), TextFormatFlags.WordBreak | TextFormatFlags.RightToLeft);
+            zikr.Height = Math.Max(34, measuredText.Height + 4);
             Controls.Add(zikr);
 
             Label note = new Label();
@@ -322,9 +325,10 @@ namespace WirdDesktop
             note.Font = new Font("Segoe UI", 9, FontStyle.Regular);
             note.ForeColor = darkMode ? Color.FromArgb(164, 178, 166) : Color.FromArgb(155, 165, 155);
             note.TextAlign = ContentAlignment.MiddleRight;
-            note.Location = new Point(18, 116);
-            note.Size = new Size(300, 20);
+            note.Location = new Point(18, zikr.Bottom + 4);
+            note.Size = new Size(324, 20);
             Controls.Add(note);
+            Height = note.Bottom + 12;
 
             Timer timer = new Timer();
             timer.Interval = Math.Max(5, seconds) * 1000;
@@ -378,7 +382,7 @@ namespace WirdDesktop
             AddLabel("اختر ذكرًا أو اكتب ذكرًا خاصًا", 60);
             dhikr = new ComboBox();
             dhikr.DropDownStyle = ComboBoxStyle.DropDown;
-            dhikr.Items.AddRange(new object[] { "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ", "سُبْحَانَ اللَّهِ", "الْحَمْدُ لِلَّهِ", "اللَّهُ أَكْبَرُ", "لَا إِلَهَ إِلَّا اللَّهُ", "أَسْتَغْفِرُ اللَّهَ", "لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ", "سُبْحَانَ اللَّهِ وَالْحَمْدُ لِلَّهِ وَلَا إِلَهَ إِلَّا اللَّهُ وَاللَّهُ أَكْبَرُ", "اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ" });
+            dhikr.Items.AddRange(new object[] { "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ", "سُبْحَانَ اللَّهِ", "الْحَمْدُ لِلَّهِ", "اللَّهُ أَكْبَرُ", "لَا إِلَهَ إِلَّا اللَّهُ", "أَسْتَغْفِرُ اللَّهَ", "لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ", "سُبْحَانَ اللَّهِ وَالْحَمْدُ لِلَّهِ وَلَا إِلَهَ إِلَّا اللَّهُ وَاللَّهُ أَكْبَرُ", "اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ", "سُبْحَانَ اللَّهِ الْعَظِيمِ وَبِحَمْدِهِ", "لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ", "أَسْتَغْفِرُ اللَّهَ الْعَظِيمَ وَأَتُوبُ إِلَيْهِ", "حَسْبِيَ اللَّهُ لَا إِلَهَ إِلَّا هُوَ، عَلَيْهِ تَوَكَّلْتُ وَهُوَ رَبُّ الْعَرْشِ الْعَظِيمِ", "اللَّهُمَّ أَعِنِّي عَلَى ذِكْرِكَ وَشُكْرِكَ وَحُسْنِ عِبَادَتِكَ" });
             dhikr.Text = current.Dhikr;
             if (!dhikr.Items.Contains(current.Dhikr)) dhikr.Items.Add(current.Dhikr);
             dhikr.Location = new Point(22, 86);
