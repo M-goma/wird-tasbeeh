@@ -46,7 +46,7 @@ internal static class WirdInstaller
             File.Copy(runningInstaller, installerPath, true);
 
         string startMenu = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), "Programs", "Wird.lnk");
-        string desktop = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), "وِرد.lnk");
+        string desktop = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), "Wird.lnk");
         string startup = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "Wird.lnk");
         CreateShortcut(startMenu, appPath);
         CreateShortcut(desktop, appPath);
@@ -83,7 +83,7 @@ internal static class WirdInstaller
         catch { }
 
         DeleteShortcut(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), "Programs", "Wird.lnk"));
-        DeleteShortcut(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), "وِرد.lnk"));
+        DeleteShortcut(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), "Wird.lnk"));
         DeleteShortcut(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "Wird.lnk"));
         try { Registry.CurrentUser.DeleteSubKeyTree("Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\WirdTasbeeh", false); }
         catch { }
