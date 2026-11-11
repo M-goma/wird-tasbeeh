@@ -23,7 +23,9 @@ internal static class WirdInstaller
         }
         catch (Exception ex)
         {
-            MessageBox.Show("تعذّر إكمال العملية.\r\n" + ex.Message, ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            Exception cause = ex;
+            while (cause.InnerException != null) cause = cause.InnerException;
+            MessageBox.Show("تعذّر إكمال العملية.\r\n" + cause.GetType().Name + ": " + cause.Message, ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
 
@@ -105,16 +107,15 @@ internal static class WirdInstaller
         Directory.CreateDirectory(Path.GetDirectoryName(path));
         Type shellType = Type.GetTypeFromProgID("WScript.Shell");
         if (shellType == null) return;
-        object shell = Activator.CreateInstance(shellType);
-        object shortcut = shellType.InvokeMember("CreateShortcut", BindingFlags.InvokeMethod, null, shell, new object[] { path });
-        Type shortcutType = shortcut.GetType();
-        shortcutType.InvokeMember("TargetPath", BindingFlags.SetProperty, null, shortcut, new object[] { target });
-        shortcutType.InvokeMember("WorkingDirectory", BindingFlags.SetProperty, null, shortcut, new object[] { Path.GetDirectoryName(target) });
-        shortcutType.InvokeMember("Description", BindingFlags.SetProperty, null, shortcut, new object[] { ProductName });
-        shortcutType.InvokeMember("IconLocation", BindingFlags.SetProperty, null, shortcut, new object[] { target + ",0" });
-        shortcutType.InvokeMember("Save", BindingFlags.InvokeMethod, null, shortcut, null);
-        Marshal.FinalReleaseComObject(shortcut);
-        Marshal.FinalReleaseComObject(shell);
+        dynamic shell = Activator.CreateInstance(shellType);
+        dynamic shortcut = shell.CreateShortcut(path);
+        shortcut.TargetPath = target;
+        shortcut.WorkingDirectory = Path.GetDirectoryName(target);
+        shortcut.Description = ProductName;
+        shortcut.IconLocation = target + ",0";
+        shortcut.Save();
+        Marshal.FinalReleaseComObject((object)shortcut);
+        Marshal.FinalReleaseComObject((object)shell);
     }
 
     private static void DeleteShortcut(string path)
@@ -123,4 +124,3 @@ internal static class WirdInstaller
         catch { }
     }
 }
-

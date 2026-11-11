@@ -176,16 +176,15 @@ namespace WirdDesktop
                 string exe = Application.ExecutablePath;
                 Type shellType = Type.GetTypeFromProgID("WScript.Shell");
                 if (shellType == null) return;
-                object shell = Activator.CreateInstance(shellType);
-                object link = shellType.InvokeMember("CreateShortcut", System.Reflection.BindingFlags.InvokeMethod, null, shell, new object[] { shortcut });
-                Type linkType = link.GetType();
-                linkType.InvokeMember("TargetPath", System.Reflection.BindingFlags.SetProperty, null, link, new object[] { exe });
-                linkType.InvokeMember("WorkingDirectory", System.Reflection.BindingFlags.SetProperty, null, link, new object[] { Path.GetDirectoryName(exe) });
-                linkType.InvokeMember("Description", System.Reflection.BindingFlags.SetProperty, null, link, new object[] { "وِرد — تذكير التسبيح" });
-                linkType.InvokeMember("IconLocation", System.Reflection.BindingFlags.SetProperty, null, link, new object[] { exe + ",0" });
-                linkType.InvokeMember("Save", System.Reflection.BindingFlags.InvokeMethod, null, link, null);
-                System.Runtime.InteropServices.Marshal.FinalReleaseComObject(link);
-                System.Runtime.InteropServices.Marshal.FinalReleaseComObject(shell);
+                dynamic shell = Activator.CreateInstance(shellType);
+                dynamic link = shell.CreateShortcut(shortcut);
+                link.TargetPath = exe;
+                link.WorkingDirectory = Path.GetDirectoryName(exe);
+                link.Description = "وِرد — تذكير التسبيح";
+                link.IconLocation = exe + ",0";
+                link.Save();
+                System.Runtime.InteropServices.Marshal.FinalReleaseComObject((object)link);
+                System.Runtime.InteropServices.Marshal.FinalReleaseComObject((object)shell);
             }
             catch { }
         }
@@ -412,4 +411,3 @@ namespace WirdDesktop
         }
     }
 }
-
