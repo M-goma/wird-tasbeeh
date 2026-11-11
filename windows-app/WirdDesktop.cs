@@ -16,6 +16,9 @@ namespace WirdDesktop
         public int DurationSeconds { get; set; }
         public string Dhikr { get; set; }
         public bool RunAtStartup { get; set; }
+        public int ActiveFromMinutes { get; set; }
+        public int ActiveUntilMinutes { get; set; }
+        public bool DarkMode { get; set; }
 
         public UserSettings()
         {
@@ -23,6 +26,9 @@ namespace WirdDesktop
             DurationSeconds = 30;
             Dhikr = "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ";
             RunAtStartup = true;
+            ActiveFromMinutes = 480;
+            ActiveUntilMinutes = 1320;
+            DarkMode = false;
         }
     }
 
@@ -87,13 +93,22 @@ namespace WirdDesktop
         {
             if (paused || DateTime.Now < nextReminder) return;
             nextReminder = DateTime.Now.AddMinutes(settings.IntervalMinutes);
+            if (!IsWithinActiveHours(DateTime.Now)) return;
             ShowReminder();
+        }
+
+        private bool IsWithinActiveHours(DateTime now)
+        {
+            int current = now.Hour * 60 + now.Minute;
+            int from = settings.ActiveFromMinutes;
+            int until = settings.ActiveUntilMinutes;
+            return from <= until ? current >= from && current < until : current >= from || current < until;
         }
 
         private void ShowReminder()
         {
             if (reminder != null && !reminder.IsDisposed) reminder.Close();
-            reminder = new ReminderForm(settings.Dhikr, settings.DurationSeconds);
+            reminder = new ReminderForm(settings.Dhikr, settings.DurationSeconds, settings.DarkMode);
             reminder.Show();
         }
 
@@ -233,7 +248,7 @@ namespace WirdDesktop
             }
         }
 
-        public ReminderForm(string dhikr, int seconds)
+        public ReminderForm(string dhikr, int seconds, bool darkMode)
         {
             Text = "وِرد";
             FormBorderStyle = FormBorderStyle.None;
@@ -241,7 +256,7 @@ namespace WirdDesktop
             TopMost = true;
             RightToLeft = RightToLeft.Yes;
             RightToLeftLayout = true;
-            BackColor = Color.White;
+            BackColor = darkMode ? Color.FromArgb(28, 39, 33) : Color.White;
             Size = new Size(390, 190);
             Padding = new Padding(20);
 
@@ -254,7 +269,7 @@ namespace WirdDesktop
             Label close = new Label();
             close.Text = "×";
             close.Font = new Font("Segoe UI", 17, FontStyle.Regular);
-            close.ForeColor = Color.FromArgb(125, 140, 130);
+            close.ForeColor = darkMode ? Color.FromArgb(170, 187, 174) : Color.FromArgb(125, 140, 130);
             close.TextAlign = ContentAlignment.MiddleCenter;
             close.Size = new Size(30, 30);
             close.Location = new Point(340, 12);
@@ -265,7 +280,7 @@ namespace WirdDesktop
             Label brand = new Label();
             brand.Text = "وِرد  ·  لحظةُ ذِكر";
             brand.Font = new Font("Segoe UI", 10, FontStyle.Regular);
-            brand.ForeColor = Color.FromArgb(125, 145, 130);
+            brand.ForeColor = darkMode ? Color.FromArgb(170, 187, 174) : Color.FromArgb(125, 145, 130);
             brand.Location = new Point(24, 20);
             brand.Size = new Size(290, 25);
             Controls.Add(brand);
@@ -273,7 +288,7 @@ namespace WirdDesktop
             Label title = new Label();
             title.Text = "ألا بذكر الله تطمئن القلوب";
             title.Font = new Font("Segoe UI", 16, FontStyle.Bold);
-            title.ForeColor = Color.FromArgb(33, 75, 57);
+            title.ForeColor = darkMode ? Color.FromArgb(220, 235, 222) : Color.FromArgb(33, 75, 57);
             title.TextAlign = ContentAlignment.MiddleRight;
             title.Location = new Point(22, 57);
             title.Size = new Size(342, 35);
@@ -282,7 +297,7 @@ namespace WirdDesktop
             Label zikr = new Label();
             zikr.Text = dhikr;
             zikr.Font = new Font("Segoe UI", 19, FontStyle.Bold);
-            zikr.ForeColor = Color.FromArgb(83, 121, 87);
+            zikr.ForeColor = darkMode ? Color.FromArgb(177, 211, 181) : Color.FromArgb(83, 121, 87);
             zikr.TextAlign = ContentAlignment.MiddleRight;
             zikr.Location = new Point(22, 98);
             zikr.Size = new Size(342, 42);
@@ -291,7 +306,7 @@ namespace WirdDesktop
             Label note = new Label();
             note.Text = "سيختفي التذكير تلقائيًا";
             note.Font = new Font("Segoe UI", 9, FontStyle.Regular);
-            note.ForeColor = Color.FromArgb(155, 165, 155);
+            note.ForeColor = darkMode ? Color.FromArgb(164, 178, 166) : Color.FromArgb(155, 165, 155);
             note.TextAlign = ContentAlignment.MiddleRight;
             note.Location = new Point(22, 148);
             note.Size = new Size(342, 22);
@@ -316,8 +331,11 @@ namespace WirdDesktop
     {
         private readonly NumericUpDown interval;
         private readonly NumericUpDown duration;
-        private readonly ComboBox dhikr;
+        private readonly TextBox dhikr;
         private readonly CheckBox startup;
+        private readonly CheckBox darkMode;
+        private readonly DateTimePicker activeFrom;
+        private readonly DateTimePicker activeUntil;
         private readonly Action<UserSettings> save;
 
         public SettingsForm(UserSettings current, Action<UserSettings> saveAction)
@@ -333,7 +351,7 @@ namespace WirdDesktop
             RightToLeftLayout = true;
             Font = new Font("Segoe UI", 10);
             BackColor = Color.FromArgb(247, 247, 241);
-            ClientSize = new Size(390, 345);
+            ClientSize = new Size(390, 455);
 
             Label title = new Label();
             title.Text = "وِرد — إعدادات التذكير";
@@ -343,41 +361,51 @@ namespace WirdDesktop
             title.Size = new Size(345, 32);
             Controls.Add(title);
 
-            AddLabel("الذِكر", 62);
-            dhikr = new ComboBox();
-            dhikr.DropDownStyle = ComboBoxStyle.DropDownList;
-            dhikr.Items.AddRange(new object[] { "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ", "سُبْحَانَ اللَّهِ", "الْحَمْدُ لِلَّهِ", "اللَّهُ أَكْبَرُ", "لَا إِلَهَ إِلَّا اللَّهُ", "أَسْتَغْفِرُ اللَّهَ", "اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ" });
+            AddLabel("الذِكر", 60);
+            dhikr = new TextBox();
+            dhikr.Text = current.Dhikr;
             dhikr.Location = new Point(22, 86);
             dhikr.Size = new Size(345, 30);
-            dhikr.SelectedItem = current.Dhikr;
-            if (dhikr.SelectedIndex < 0) dhikr.SelectedIndex = 0;
             Controls.Add(dhikr);
 
-            AddLabel("التذكير كل (دقيقة)", 127);
+            AddLabel("التذكير كل (دقيقة)", 122);
             interval = new NumericUpDown();
             interval.Minimum = 1;
             interval.Maximum = 180;
             interval.Value = Math.Max(interval.Minimum, Math.Min(interval.Maximum, current.IntervalMinutes));
-            interval.Location = new Point(22, 151);
+            interval.Location = new Point(22, 146);
             interval.Size = new Size(345, 29);
             Controls.Add(interval);
 
-            AddLabel("مدة ظهور التذكير (ثانية)", 191);
+            AddLabel("مدة ظهور التذكير (ثانية)", 184);
             duration = new NumericUpDown();
             duration.Minimum = 5;
             duration.Maximum = 600;
             duration.Increment = 5;
             duration.Value = Math.Max(duration.Minimum, Math.Min(duration.Maximum, current.DurationSeconds));
-            duration.Location = new Point(22, 215);
+            duration.Location = new Point(22, 208);
             duration.Size = new Size(345, 29);
             Controls.Add(duration);
 
             startup = new CheckBox();
+            AddLabel("وقت تشغيل التذكير", 246);
+            activeFrom = CreateTimePicker(current.ActiveFromMinutes, new Point(22, 270));
+            activeUntil = CreateTimePicker(current.ActiveUntilMinutes, new Point(205, 270));
+            Controls.Add(activeFrom);
+            Controls.Add(activeUntil);
+
             startup.Text = "تشغيل وِرد مع بدء Windows";
             startup.Checked = current.RunAtStartup;
-            startup.Location = new Point(22, 257);
+            startup.Location = new Point(22, 309);
             startup.Size = new Size(345, 26);
             Controls.Add(startup);
+
+            darkMode = new CheckBox();
+            darkMode.Text = "الوضع الداكن";
+            darkMode.Checked = current.DarkMode;
+            darkMode.Location = new Point(22, 340);
+            darkMode.Size = new Size(345, 26);
+            Controls.Add(darkMode);
 
             Button saveButton = new Button();
             saveButton.Text = "حفظ";
@@ -385,19 +413,23 @@ namespace WirdDesktop
             saveButton.ForeColor = Color.White;
             saveButton.FlatStyle = FlatStyle.Flat;
             saveButton.FlatAppearance.BorderSize = 0;
-            saveButton.Location = new Point(22, 295);
+            saveButton.Location = new Point(22, 390);
             saveButton.Size = new Size(345, 34);
             saveButton.Click += delegate
             {
                 UserSettings value = new UserSettings();
                 value.IntervalMinutes = Decimal.ToInt32(interval.Value);
                 value.DurationSeconds = Decimal.ToInt32(duration.Value);
-                value.Dhikr = Convert.ToString(dhikr.SelectedItem);
+                value.Dhikr = String.IsNullOrWhiteSpace(dhikr.Text) ? "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ" : dhikr.Text.Trim();
                 value.RunAtStartup = startup.Checked;
+                value.DarkMode = darkMode.Checked;
+                value.ActiveFromMinutes = activeFrom.Value.Hour * 60 + activeFrom.Value.Minute;
+                value.ActiveUntilMinutes = activeUntil.Value.Hour * 60 + activeUntil.Value.Minute;
                 save(value);
                 Close();
             };
             Controls.Add(saveButton);
+            ApplyTheme(this, current.DarkMode);
         }
 
         private void AddLabel(string text, int y)
@@ -408,6 +440,42 @@ namespace WirdDesktop
             label.Location = new Point(22, y);
             label.Size = new Size(345, 21);
             Controls.Add(label);
+        }
+
+        private DateTimePicker CreateTimePicker(int minutes, Point location)
+        {
+            DateTimePicker picker = new DateTimePicker();
+            picker.Format = DateTimePickerFormat.Custom;
+            picker.CustomFormat = "HH:mm";
+            picker.ShowUpDown = true;
+            picker.Value = DateTime.Today.AddMinutes(Math.Max(0, Math.Min(1439, minutes)));
+            picker.Location = location;
+            picker.Size = new Size(162, 29);
+            return picker;
+        }
+
+        private void ApplyTheme(Control parent, bool dark)
+        {
+            Color background = dark ? Color.FromArgb(28, 39, 33) : Color.FromArgb(247, 247, 241);
+            Color foreground = dark ? Color.FromArgb(224, 235, 226) : Color.FromArgb(73, 98, 82);
+            BackColor = background;
+            foreach (Control control in parent.Controls)
+            {
+                control.ForeColor = foreground;
+                if (control is TextBox || control is NumericUpDown || control is DateTimePicker)
+                {
+                    control.BackColor = dark ? Color.FromArgb(20, 31, 25) : Color.White;
+                }
+                else if (control is Button)
+                {
+                    control.BackColor = dark ? Color.FromArgb(49, 92, 67) : Color.FromArgb(23, 76, 61);
+                    control.ForeColor = Color.White;
+                }
+                else if (control is Label)
+                {
+                    control.BackColor = background;
+                }
+            }
         }
     }
 }

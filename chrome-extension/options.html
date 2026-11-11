@@ -1,21 +1,19 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>إعدادات وِرد</title>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>إعدادات وِرد</title>
   <style>
-    *{box-sizing:border-box}body{width:330px;margin:0;padding:20px;background:#f7f7f1;color:#17372f;font:14px/1.6 'Segoe UI',Tahoma,sans-serif}.brand{display:flex;align-items:center;gap:10px;margin-bottom:18px}.mark{display:grid;place-items:center;width:38px;height:38px;border-radius:13px;background:#174c3d;color:white;font-size:23px}.brand b,.brand small{display:block}.brand small{font-size:11px;color:#87938a}.field{display:block;margin:13px 0 6px;font-size:12px;font-weight:600;color:#496252}select,input{width:100%;padding:10px;border:1px solid #e2e8df;border-radius:10px;background:white;color:#365544;font:inherit}input[type=range]{padding:0;accent-color:#527b5c}.row{display:flex;align-items:center;gap:12px}.row input{flex:1}.row output{min-width:55px;color:#64806a;font-size:12px}.save{width:100%;margin-top:17px;border:0;border-radius:11px;padding:11px;background:#174c3d;color:white;font:inherit;cursor:pointer}.status{min-height:18px;margin:8px 0 0;color:#63856a;font-size:11px}
+    *{box-sizing:border-box}body{width:330px;margin:0;padding:20px;background:#f7f7f1;color:#17372f;font:14px/1.6 'Segoe UI',Tahoma,sans-serif}.brand{display:flex;align-items:center;gap:10px;margin-bottom:18px}.mark{display:grid;place-items:center;width:38px;height:38px;border-radius:13px;background:#174c3d;color:white;font-size:23px}.brand b,.brand small{display:block}.brand small{font-size:11px;color:#87938a}.field{display:block;margin:13px 0 6px;font-size:12px;font-weight:600;color:#496252}input{width:100%;padding:10px;border:1px solid #e2e8df;border-radius:10px;background:white;color:#365544;font:inherit}input[type=range]{padding:0;accent-color:#527b5c}.row,.times{display:flex;align-items:center;gap:12px}.row input{flex:1}.row output{min-width:55px;color:#64806a;font-size:12px}.times label{flex:1;color:#496252;font-size:11px}.times input{margin-top:5px}.theme{display:flex;align-items:center;gap:8px;margin-top:14px}.theme input{width:17px}.save{width:100%;margin-top:17px;border:0;border-radius:11px;padding:11px;background:#174c3d;color:white;font:inherit;cursor:pointer}.status{min-height:18px;margin:8px 0 0;color:#63856a;font-size:11px}body.dark{background:#18251f;color:#e5eee8}body.dark input{background:#22332a;border-color:#3a4b40;color:#e5eee8}body.dark .field,body.dark .times label{color:#c4d4c8}
   </style>
 </head>
 <body>
   <header class="brand"><span class="mark">و</span><span><b>وِرد</b><small>تذكير لطيف أثناء التصفح</small></span></header>
-  <label class="field" for="dhikr">الذِكر</label>
-  <select id="dhikr"><option>سُبْحَانَ اللَّهِ وَبِحَمْدِهِ</option><option>سُبْحَانَ اللَّهِ</option><option>الْحَمْدُ لِلَّهِ</option><option>اللَّهُ أَكْبَرُ</option><option>لَا إِلَهَ إِلَّا اللَّهُ</option><option>أَسْتَغْفِرُ اللَّهَ</option><option>اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ</option></select>
+  <label class="field" for="dhikr">الذِكر</label><input id="dhikr" maxlength="120" placeholder="اكتب الذكر الذي تريده">
   <label class="field" for="interval">التذكير كل</label><div class="row"><input id="interval" type="range" min="1" max="60" value="5"><output id="interval-out">٥ دقائق</output></div>
   <label class="field" for="duration">مدة ظهور التذكير</label><div class="row"><input id="duration" type="range" min="5" max="120" step="5" value="30"><output id="duration-out">٣٠ ثانية</output></div>
+  <label class="field">وقت التشغيل</label><div class="times"><label>من<input id="activeFrom" type="time"></label><label>إلى<input id="activeUntil" type="time"></label></div>
+  <label class="theme"><input id="darkMode" type="checkbox"> الوضع الداكن</label>
   <button id="save" class="save">حفظ الإعدادات</button><p id="status" class="status" aria-live="polite"></p>
   <script src="options.js"></script>
 </body>
 </html>
-
